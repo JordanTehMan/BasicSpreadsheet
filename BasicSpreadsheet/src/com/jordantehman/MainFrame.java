@@ -1,3 +1,11 @@
+/* Big TODO list here:
+ * 1. Add row/column names
+ * 2. Implement basic function capability (Modify spreadsheet based off of a set of user-defined rules
+ * 3. CSV support
+ * 4. Better import start path
+ * 5. Improve interface and reorganize stuff
+ */
+
 package com.jordantehman;
 
 import java.awt.BorderLayout;
@@ -9,14 +17,15 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class MainFrame {
 	
@@ -46,6 +55,7 @@ public class MainFrame {
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new GridLayout());
 		
+		//Create the spreadsheet's columns and rows
 		for (int i = 0; i < 5; i++) {
 			for (int k = 0; k < 8; k++) {
 				JTextField field = new JTextField();
@@ -54,6 +64,7 @@ public class MainFrame {
 			}
 		}
 		
+		//Create column identifiers
 		for (int i = 1; i <= 8; i++) {
 			final int index = i;
 			JLabel label = new JLabel(Integer.toString(index));
@@ -61,6 +72,7 @@ public class MainFrame {
 			columnPanel.add(label);
 		}
 		
+		//Create row identifiers
 		for (int i = 1; i <= 5; i++) {
 			final int index = i;
 			JLabel label = new JLabel(Integer.toString(index));
@@ -68,54 +80,43 @@ public class MainFrame {
 			rowPanel.add(label);
 		}
 		
+		//Export button, most logic in separate class as fields does not need to be modified
 		JButton export = new JButton("Export");
 		export.setIcon(new ImageIcon("print.png"));
 		export.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					File csv = null;
-					String path = "";
-					int num = 1;
-					
-					while (true) {
-						new File("spreadsheets").mkdirs();
-						path = "spreadsheets/" + "spreadsheet" + num + ".txt";
-						csv = new File(path);
-						
-						if (!csv.exists()) {
-							break;
-						}
-						
-						num++;
-					}
-					try (FileWriter fw = new FileWriter(path, true);
-							BufferedWriter bw = new BufferedWriter(fw)) {
-						
-							for (int i = 1; i <= 5; i++) {
-								for (int k = 1; k <= 8; k++) {
-									if (fields[i - 1][k - 1].getText().equals("")) {
-										bw.write("(" + Integer.toString(i) + ", " + Integer.toString(k) + ") = " + "null" + " ");
-									} else {
-										bw.write("(" + Integer.toString(i) + ", " + Integer.toString(k) + ") = " + "\"" + fields[i - 1][k - 1].getText() + "\"" + " ");
-									}
-								}
-								bw.write("END OF LINE");
-								bw.newLine();
+				TXTExporter.exportTXT(fields);
+			}
+		});
+		
+		//Import button, some logic is kept here for simplicity sake due to the need to modify fields
+		JButton importBtn = new JButton("Import");
+		importBtn.setIcon(new ImageIcon("import.png"));
+		importBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser dialog = new JFileChooser();
+				dialog.setAcceptAllFileFilterUsed(false);
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files (*.txt)", "txt");
+				dialog.setFileFilter(filter);
+				File file;
+				
+				if (dialog.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+					file = dialog.getSelectedFile();
+					if (file != null) {
+						String[][] values = TXTImporter.importTXT(file);
+						for (int i = 0; i < 5; i++) {
+							for (int k = 0; k < 8; k++) {
+								fields[i][k].setText(values[i][k]);
 							}
-							
-							System.out.println("Your spreadsheet has been exported.");
-								
-					} catch (IOException a) {
-						System.err.println(a);
+						}
+					} else {
+						System.err.println("Error occured while importing.");
+						//TODO: Make error output more descriptive.
 					}
-					csv.createNewFile();
-				} catch (Exception b) {
-					System.out.println(b);
 				}
 			}
 		});
-		JButton importBtn = new JButton("Import");
-		importBtn.setIcon(new ImageIcon("import.png"));
+		
 		buttonPanel.add(importBtn);
 		buttonPanel.add(export);
 		
