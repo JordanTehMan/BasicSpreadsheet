@@ -78,7 +78,8 @@ public class MainFrame {
 					int num = 1;
 					
 					while (true) {
-						path = "spreadsheet" + num + ".txt";
+						new File("spreadsheets").mkdirs();
+						path = "spreadsheets/" + "spreadsheet" + num + ".txt";
 						csv = new File(path);
 						
 						if (!csv.exists()) {
@@ -93,9 +94,9 @@ public class MainFrame {
 							for (int i = 1; i <= 5; i++) {
 								for (int k = 1; k <= 8; k++) {
 									if (fields[i - 1][k - 1].getText().equals("")) {
-										bw.write("(" + Integer.toString(i) + ", " + Integer.toString(k) + ") = " + "(Empty)" + " ");
+										bw.write("(" + Integer.toString(i) + ", " + Integer.toString(k) + ") = " + "null" + " ");
 									} else {
-										bw.write("(" + Integer.toString(i) + ", " + Integer.toString(k) + ") = " + fields[i - 1][k - 1].getText() + " ");
+										bw.write("(" + Integer.toString(i) + ", " + Integer.toString(k) + ") = " + "\"" + fields[i - 1][k - 1].getText() + "\"" + " ");
 									}
 								}
 								bw.write("END OF LINE");
