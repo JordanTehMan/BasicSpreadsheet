@@ -13,10 +13,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -43,7 +40,7 @@ public class MainFrame {
 		frame.setLayout(new BorderLayout());
 		frame.setResizable(false);
 		frame.setSize(new Dimension(800, 500));
-		ImageIcon icon = new ImageIcon("icon.png");
+		ImageIcon icon = new ImageIcon(getClass().getResource("/images/icon.png"));
 		frame.setIconImage(icon.getImage());
 		
 		JPanel textPanel = new JPanel();
@@ -82,7 +79,7 @@ public class MainFrame {
 		
 		//Export button, most logic in separate class as fields does not need to be modified
 		JButton export = new JButton("Export");
-		export.setIcon(new ImageIcon("print.png"));
+		export.setIcon(new ImageIcon(getClass().getResource("/images/print.png")));
 		export.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				TXTExporter.exportTXT(fields);
@@ -91,7 +88,7 @@ public class MainFrame {
 		
 		//Import button, some logic is kept here for simplicity sake due to the need to modify fields
 		JButton importBtn = new JButton("Import");
-		importBtn.setIcon(new ImageIcon("import.png"));
+		importBtn.setIcon(new ImageIcon(getClass().getResource("/images/import.png")));
 		importBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser dialog = new JFileChooser();
